@@ -39,17 +39,32 @@ class AuthController extends Controller
 
         // 2. Coba lakukan login
         if (Auth::attempt($credentials)) {
-            // Jika berhasil
+            
+            // Jika berhasil login, regenerate session
             $request->session()->regenerate();
-
-            // Simpan nama user di session untuk sapaan
             session(['username' => Auth::user()->name]);
 
-            // Arahkan ke dashboard guest (Soal 3)
-            return redirect()->intended(route('guest.dashboard'));
+            // === LOGIKA PEMISAHAN ROLE (INI YANG KURANG TADI) ===
+            $role = Auth::user()->role;
+
+            if ($role === 'admin') {
+                // Jika Admin -> Masuk ke Command Center
+                return redirect()->intended(route('admin.dashboard'));
+            } 
+            
+            elseif ($role === 'mitra') {
+                // Jika Mitra -> Masuk ke Dashboard Mitra (Nanti dibuat)
+                // return redirect()->intended(route('mitra.dashboard'));
+                return abort(403, 'Halaman Mitra belum dibuat'); 
+            } 
+            
+            else {
+                // Jika Petani -> Masuk ke Dashboard Petani (User Biasa)
+                return redirect()->intended(route('guest.dashboard'));
+            }
         }
 
-        // 3. Jika gagal
+        // 3. Jika gagal login
         return back()->with('error', 'Login gagal! Email atau Password salah.');
     }
 

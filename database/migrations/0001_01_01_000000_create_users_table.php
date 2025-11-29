@@ -11,22 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // 1. TABEL USERS
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // Tambahan Role & Status
+            $table->enum('role', ['admin', 'petani', 'mitra'])->default('petani');
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // 2. TABEL PASSWORD RESET TOKENS
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // 3. TABEL SESSIONS (INI YANG HILANG TADI)
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

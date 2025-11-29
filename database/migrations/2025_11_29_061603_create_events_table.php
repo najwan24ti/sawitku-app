@@ -6,24 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('catatan_keuangans', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->id();
-            // Relasi ke tabel users
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            
+            $table->string('nama_event');
             $table->date('tanggal');
-            $table->string('deskripsi');
-            $table->enum('jenis', ['pemasukan', 'pengeluaran']);
-            $table->decimal('nominal', 15, 2);
-            $table->string('bukti')->nullable();
+            $table->text('deskripsi');
+            $table->string('kategori');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('catatan_keuangans');
+        Schema::dropIfExists('events');
     }
 };
